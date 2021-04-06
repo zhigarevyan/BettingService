@@ -13,10 +13,11 @@ public class Logout implements Command {
 	private static final String MESSAGE_SUCCESS = "Success";
 
 	@Override
-	public void execute(HttpServletRequest request, HttpServletResponse response){
+	public void execute(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
 		request.getSession().invalidate();
 		request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS,MESSAGE_SUCCESS);
-		CommandProvider.getInstance().getCommand(GO_TO_WELCOME_PAGE_COMMAND);
+		CommandProvider.getInstance().getCommand(GO_TO_WELCOME_PAGE_COMMAND).execute(request,response);
 	}
 
 }
