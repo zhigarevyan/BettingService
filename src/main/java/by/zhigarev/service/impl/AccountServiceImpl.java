@@ -7,6 +7,7 @@ import by.zhigarev.dao.DAOProvider;
 import by.zhigarev.dao.exception.DAOException;
 import by.zhigarev.service.AccountService;
 import by.zhigarev.service.exception.ServiceException;
+import by.zhigarev.service.validator.Validator;
 
 public class AccountServiceImpl implements AccountService {
     private static final AccountService instance = new AccountServiceImpl();
@@ -26,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             return accountDAO.getAccountByUser(user);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_CANT_GET_ACCOUNT,e);
+            throw new ServiceException(MESSAGE_CANT_GET_ACCOUNT, e);
         }
     }
 
@@ -36,23 +37,29 @@ public class AccountServiceImpl implements AccountService {
             return accountDAO.createAccountByUser(user);
 
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_CANT_CREATE_ACCOUNT,e);
+            throw new ServiceException(MESSAGE_CANT_CREATE_ACCOUNT, e);
         }
     }
 
     @Override
-    public boolean writeOffMoneyByAccountId(int accountId, double amount) throws ServiceException {
-        try{
-            return accountDAO.writeOffMoneyByAccountId(accountId,amount);
+    public void writeOffMoneyByAccountId(int accountId, double amount) throws ServiceException {
+        if (!Validator.isValidAmount(amount) && !Validator.isValidId(accountId)) {
+            return;
+        }
+        try {
+            accountDAO.writeOffMoneyByAccountId(accountId, amount);
         } catch (DAOException e) {
             throw new ServiceException(MESSAGE_CANT_WRITE_OFF_MONEY);
         }
     }
 
     @Override
-    public boolean payMoneyByAccountId(int accountId, double amount) throws ServiceException {
-        try{
-            return accountDAO.payMoneyByAccountId(accountId,amount);
+    public void payMoneyByAccountId(int accountId, double amount) throws ServiceException {
+        if (!Validator.isValidAmount(amount) && !Validator.isValidId(accountId)) {
+            return;
+        }
+        try {
+            accountDAO.payMoneyByAccountId(accountId, amount);
         } catch (DAOException e) {
             throw new ServiceException(MESSAGE_CANT_PAY_MONEY);
         }

@@ -6,6 +6,9 @@
     <title>userBets</title>
 </head>
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="showEvent" var="showEvent"/>
@@ -42,7 +45,7 @@
                             <div class="col-4">${userBet.bet.offer}</div>
                         </div>
                         <div class="row justify-content-between">
-                            <div class="col-4">${betAmount} : </div>
+                            <div class="col-4">${betAmount} :</div>
                             <div class="col-4"> ${userBet.betAmount}</div>
                         </div>
                         <c:choose>

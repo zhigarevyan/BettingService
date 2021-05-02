@@ -7,6 +7,7 @@ import by.zhigarev.dao.exception.DuplicateLoginException;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.UserService;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.sql.Date;
 
 public class SaveProfileChanges extends UserCommand {
+    private static final Logger logger = Logger.getLogger(SaveProfileChanges.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
     private static final String ATTRIBUTE_MESSAGE_SUCCESS = "message_success";
     private static final String ATTRIBUTE_MESSAGE_ERROR = "message_error";
     private static final String MESSAGE_ERROR = "Error";
@@ -28,7 +31,8 @@ public class SaveProfileChanges extends UserCommand {
     private static final String DATE_PARAMETER = "birthday";
     private static final String GO_TO_USER_INFO_PAGE_COMMAND = "go_to_user_info_page";
     private static final String GO_TO_EDIT_PROFILE_PAGE_COMMAND = "go_to_edit_profile_page";
-    private static final CommandProvider commandProvider =  CommandProvider.getInstance();
+    private static final CommandProvider commandProvider = CommandProvider.getInstance();
+
     @Override
     protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         UserService userService = ServiceProvider.getUserService();
@@ -44,12 +48,14 @@ public class SaveProfileChanges extends UserCommand {
         try {
             userService.changeUser(newUser);
             request.getSession(true).setAttribute(ATTRIBUTE_USER, newUser);
-            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS,MESSAGE_SUCCESS);
+            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS, MESSAGE_SUCCESS);
             commandProvider.getCommand(GO_TO_USER_INFO_PAGE_COMMAND).execute(request, response);
         } catch (DuplicateLoginException e) {
+            logger.error(MESSAGE_DUPLICATE_LOGIN_EXCEPTION);
             request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_DUPLICATE_LOGIN_EXCEPTION);
             commandProvider.getCommand(GO_TO_EDIT_PROFILE_PAGE_COMMAND).execute(request, response);
         } catch (ServiceException e) {
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
             request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(GO_TO_EDIT_PROFILE_PAGE_COMMAND).execute(request, response);
         }

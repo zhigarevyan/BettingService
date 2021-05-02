@@ -1,14 +1,16 @@
 package by.zhigarev.dao.impl;
 
 import by.zhigarev.bean.Account;
-import by.zhigarev.bean.User;
 import by.zhigarev.bean.info.UserBetInfo;
 import by.zhigarev.dao.UserBetDAO;
 import by.zhigarev.dao.connection.ConnectionPool;
 import by.zhigarev.dao.connection.impl.ConnectionPoolImpl;
 import by.zhigarev.dao.exception.DAOException;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,17 +29,17 @@ public class UserBetDAOImpl implements UserBetDAO {
     }
 
     @Override
-    public boolean addUserBet(UserBetInfo userBetInfo) throws DAOException {
+    public void addUserBet(UserBetInfo userBetInfo) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_ADD_USER_BET);
-            ps.setInt(UserBetInsertIndexes.ACCOUNT_ID,userBetInfo.getAccountId());
-            ps.setInt(UserBetInsertIndexes.BET_ID,userBetInfo.getBetId());
+            ps.setInt(UserBetInsertIndexes.ACCOUNT_ID, userBetInfo.getAccountId());
+            ps.setInt(UserBetInsertIndexes.BET_ID, userBetInfo.getBetId());
             ps.setDate(UserBetInsertIndexes.TIMESTAMP, new java.sql.Date(userBetInfo.getTimeStamp().getTime()));
-            ps.setDouble(UserBetInsertIndexes.BET_AMOUNT,userBetInfo.getBetAmount());
-            return ps.execute();
+            ps.setDouble(UserBetInsertIndexes.BET_AMOUNT, userBetInfo.getBetAmount());
+            ps.execute();
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
         } finally {
@@ -53,17 +55,17 @@ public class UserBetDAOImpl implements UserBetDAO {
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_ALL_USER_BETS);
-            ps.setInt(UserBetIndexes.ID,account.getId());
+            ps.setInt(UserBetIndexes.ID, account.getId());
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 UserBetInfo userBetInfo = null;
 
                 userBetInfo = new UserBetInfo(
-                  rs.getInt(UserBetIndexes.ID),
-                  rs.getInt(UserBetIndexes.ACCOUNT_ID),
-                  rs.getInt(UserBetIndexes.BET_ID),
-                  rs.getDate(UserBetIndexes.TIMESTAMP),
-                  rs.getDouble(UserBetIndexes.BET_AMOUNT)
+                        rs.getInt(UserBetIndexes.ID),
+                        rs.getInt(UserBetIndexes.ACCOUNT_ID),
+                        rs.getInt(UserBetIndexes.BET_ID),
+                        rs.getDate(UserBetIndexes.TIMESTAMP),
+                        rs.getDouble(UserBetIndexes.BET_AMOUNT)
                 );
                 userBets.add(userBetInfo);
             }
@@ -84,9 +86,9 @@ public class UserBetDAOImpl implements UserBetDAO {
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_USER_BET_BY_ID);
-            ps.setInt(UserBetIndexes.ID,id);
+            ps.setInt(UserBetIndexes.ID, id);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
 
                 userBetInfo = new UserBetInfo(
                         rs.getInt(UserBetIndexes.ID),
@@ -96,7 +98,7 @@ public class UserBetDAOImpl implements UserBetDAO {
                         rs.getDouble(UserBetIndexes.BET_AMOUNT)
                 );
             }
-          return userBetInfo;
+            return userBetInfo;
 
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
@@ -107,14 +109,14 @@ public class UserBetDAOImpl implements UserBetDAO {
 
     @Override
     public List<UserBetInfo> getAllBetsByBetId(int betId) throws DAOException {
-        int BET_ID = 1;
+        final int BET_ID = 1;
         Connection connection = null;
         PreparedStatement ps = null;
         List<UserBetInfo> userBets = new ArrayList<>();
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_ALL_USER_BETS_BY_BET_ID);
-            ps.setInt(BET_ID,betId);
+            ps.setInt(BET_ID, betId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 UserBetInfo userBetInfo = null;
@@ -128,7 +130,7 @@ public class UserBetDAOImpl implements UserBetDAO {
                 userBets.add(userBetInfo);
             }
             return userBets;
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
         } finally {
             connectionPool.closeConnection(connection, ps);

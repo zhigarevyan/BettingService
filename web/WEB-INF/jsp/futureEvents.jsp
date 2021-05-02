@@ -6,6 +6,9 @@
     <title>Future events</title>
 </head>
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="admin.addParticipant" var="addParticipant"/>

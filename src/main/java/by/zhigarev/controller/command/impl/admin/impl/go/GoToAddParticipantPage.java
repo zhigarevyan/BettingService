@@ -11,9 +11,10 @@ public class GoToAddParticipantPage extends AdminCommand {
     private static final String ADD_PARTICIPANT_FRAGMENT_PATH = "admin/addParticipant.jsp";
     private static final String ADMIN_PAGE_PATH = "WEB-INF/jsp/admin.jsp";
     private static final String ATTRIBUTE_ADMIN_CONTENT = "admin_content";
+
     @Override
     protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute(ATTRIBUTE_ADMIN_CONTENT,ADD_PARTICIPANT_FRAGMENT_PATH);
-        request.getRequestDispatcher(ADMIN_PAGE_PATH).forward(request,response);
+        request.setAttribute(ATTRIBUTE_ADMIN_CONTENT, ADD_PARTICIPANT_FRAGMENT_PATH);
+        request.getRequestDispatcher(ADMIN_PAGE_PATH).forward(request, response);
     }
 }

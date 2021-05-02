@@ -8,8 +8,11 @@ import by.zhigarev.service.exception.ServiceException;
 import java.util.List;
 
 public interface UserBetService {
-    boolean addUserBet(UserBetInfo userBetInfo) throws ServiceException;
+    void addUserBet(UserBetInfo userBetInfo) throws ServiceException;
+
     List<UserBet> getAllAccountBets(Account account) throws ServiceException;
+
     UserBet getUserBetById(int id) throws ServiceException;
+
     List<UserBet> getAllBetsByBetId(int betId) throws ServiceException;
 }

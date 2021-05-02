@@ -1,7 +1,6 @@
 package by.zhigarev.service.impl;
 
 import by.zhigarev.bean.Account;
-import by.zhigarev.bean.User;
 import by.zhigarev.bean.UserBet;
 import by.zhigarev.bean.info.UserBetInfo;
 import by.zhigarev.dao.AccountDAO;
@@ -12,6 +11,8 @@ import by.zhigarev.service.BetService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.UserBetService;
 import by.zhigarev.service.exception.ServiceException;
+import by.zhigarev.service.exception.ValidationException;
+import by.zhigarev.service.validator.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +25,16 @@ public class UserBetServiceImpl implements UserBetService {
     private static final String MESSAGE_GET_ALL_USER_BETS_EXCEPTION = "Cant get all user bets";
     private static final String MESSAGE_GET_USER_BETS_BY_ID_EXCEPTION = "Cant get user bet by id";
     private static final BetService betService = ServiceProvider.getBetService();
+    private static final String MESSAGE_VALIDATION_EXCEPTION = "Validation exception";
 
     public static UserBetServiceImpl getInstance() {
         return instance;
     }
 
     @Override
-    public boolean addUserBet(UserBetInfo userBetInfo) throws ServiceException {
+    public void addUserBet(UserBetInfo userBetInfo) throws ServiceException {
         try {
-            return userBetDAO.addUserBet(userBetInfo);
+            userBetDAO.addUserBet(userBetInfo);
         } catch (DAOException e) {
             throw new ServiceException(MESSAGE_ADD_USER_BET_EXCEPTION, e);
         }
@@ -62,6 +64,9 @@ public class UserBetServiceImpl implements UserBetService {
 
     @Override
     public UserBet getUserBetById(int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         UserBet userBet = null;
         try {
             UserBetInfo userBetInfo = userBetDAO.getUserBetById(id);
@@ -79,6 +84,9 @@ public class UserBetServiceImpl implements UserBetService {
 
     @Override
     public List<UserBet> getAllBetsByBetId(int betId) throws ServiceException {
+        if (!Validator.isValidId(betId)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         List<UserBet> userBets = new ArrayList<>();
 
         try {

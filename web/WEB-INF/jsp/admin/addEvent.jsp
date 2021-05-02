@@ -7,7 +7,9 @@
     <title>addEvent</title>
 </head>
 <body>
-
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="admin.addEvent" var="addEvent"/>
@@ -17,15 +19,15 @@
 <fmt:message key="admin.chooseParticipant" var="chooseParticipant"/>
 <fmt:message key="location" var="location"/>
 <fmt:message key="info" var="info"/>
-<fmt:message key="start_date_time" var="start_date_time"/>
+<fmt:message key="start_date" var="start_date"/>
 <fmt:message key="add" var="add"/>
 
 <fmt:setBundle basename="regex"/>
 <fmt:message key="regex.requiredField" var="regex_requiredField"/>
 
 
-    <jsp:useBean id="date" class="java.util.Date"/>
-    <fmt:formatDate var="currentDate" value="${date}" pattern="yyyy-MM-dd"/>
+<jsp:useBean id="date" class="java.util.Date"/>
+<fmt:formatDate var="currentDate" value="${date}" pattern="yyyy-MM-dd"/>
 
 <div class="container">
     <div class="row justify-content-center mt-2">
@@ -66,9 +68,9 @@
                            class="form-control input-lg" name="info"/>
                 </div>
                 <div class="form-group">
-                    <label for="startDateTimeInput">${start_date_time} : </label>
+                    <label for="startDateTimeInput">${start_date} : </label>
                     <input type="date" value="${currentDate}" min="${currentDate}" class="form-control"
-                           name="start_date_time" id="startDateTimeInput">
+                           name="start_date" id="startDateTimeInput">
                 </div>
                 <div class="form-group pt-3">
                     <button type="submit" class="btn btn-success">${add.toUpperCase()}</button>

@@ -17,6 +17,8 @@ import java.util.List;
 public class ParticipantDAOImpl implements ParticipantDAO {
     private static final ConnectionPool connectionPool = ConnectionPoolImpl.getInstance();
     private static final String SQL_INSERT_PARTICIPANT = "insert into Participants(name,surname,info,image) values (?,?,?,?)";
+    private static final String SQL_INSERT_IMAGE_BY_ID = "update participants set image = ? where id = ?";
+    private static final String SQL_UPDATE_PARTICIPANT_BY_ID = "update participants set name = ?,surname = ?, info = ? , image = ? where id = ?";
     private static final String SQL_SELECT_ALL_PARTICIPANTS = "select id,name,surname,info,image from Participants order by id desc";
     private static final String SQL_SELECT_PARTICIPANT_BY_NAME = "select id,name,surname,info,image from Participants where name = ? and surname = ?";
     private static final String SQL_SELECT_PARTICIPANT_BY_ID = "select id,name,surname,info,image from Participants where id = ?";
@@ -25,14 +27,14 @@ public class ParticipantDAOImpl implements ParticipantDAO {
     private static final String MESSAGE_CANT_CREATE_PARTICIPANT_EXCEPTION = "Cant create participant";
     private static final String MESSAGE_CANT_SELECT_ALL_PARTICIPANTS_EXCEPTION = "Cant select all participants";
     private static final String MESSAGE_CANT_SELECT_PARTICIPANT_EXCEPTION = "Cant select participant";
-    private static final ParticipantDAOImpl intstance = new ParticipantDAOImpl();
+    private static final ParticipantDAOImpl instance = new ParticipantDAOImpl();
 
     public static ParticipantDAO getInstance() {
-        return intstance;
+        return instance;
     }
 
     @Override
-    public boolean addParticipant(ParticipantInfo participant) throws DAOException {
+    public void addParticipant(ParticipantInfo participant) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
@@ -43,21 +45,39 @@ public class ParticipantDAOImpl implements ParticipantDAO {
             ps.setString(ParticipantInsertIndexes.SURNAME, participant.getSurName());
             ps.setString(ParticipantInsertIndexes.INFO, participant.getInfo());
             ps.setString(ParticipantInsertIndexes.IMAGE, participant.getImage());
-            return ps.execute();
+            ps.execute();
 
         } catch (DAOException e) {
             throw new DAOException(MESSAGE_CANT_CREATE_PARTICIPANT_EXCEPTION, e);
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
-        }finally {
+        } finally {
             connectionPool.closeConnection(connection, ps);
         }
     }
 
+
     @Override
-    public boolean deleteParticipant(Participant participant) {
-        return false;
+    public void updateParticipant(ParticipantInfo participantInfo, int id) throws DAOException {
+        final int ID_INDEX = 5;
+        Connection connection = null;
+        PreparedStatement ps = null;
+        try {
+            connection = connectionPool.getConnection();
+            ps = connection.prepareStatement(SQL_UPDATE_PARTICIPANT_BY_ID);
+            ps.setString(ParticipantInsertIndexes.NAME, participantInfo.getName());
+            ps.setString(ParticipantInsertIndexes.SURNAME, participantInfo.getSurName());
+            ps.setString(ParticipantInsertIndexes.INFO, participantInfo.getInfo());
+            ps.setString(ParticipantInsertIndexes.IMAGE, participantInfo.getImage());
+            ps.setInt(ID_INDEX, id);
+            ps.execute();
+        } catch (SQLException e) {
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
+        }
     }
+
 
     @Override
     public List<Participant> getAllParticipants() throws DAOException {
@@ -94,10 +114,10 @@ public class ParticipantDAOImpl implements ParticipantDAO {
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_SELECT_PARTICIPANT_BY_NAME);
-            ps.setString(ParticipantInsertIndexes.NAME,name);
-            ps.setString(ParticipantInsertIndexes.SURNAME,surname);
+            ps.setString(ParticipantInsertIndexes.NAME, name);
+            ps.setString(ParticipantInsertIndexes.SURNAME, surname);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 participant = new Participant(
                         rs.getInt(ParticipantIndexes.ID),
                         rs.getString(ParticipantIndexes.NAME),
@@ -107,7 +127,7 @@ public class ParticipantDAOImpl implements ParticipantDAO {
             }
             return participant;
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_CANT_SELECT_PARTICIPANT_EXCEPTION,e);
+            throw new DAOException(MESSAGE_CANT_SELECT_PARTICIPANT_EXCEPTION, e);
         } finally {
             connectionPool.closeConnection(connection, ps);
         }
@@ -118,12 +138,12 @@ public class ParticipantDAOImpl implements ParticipantDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         Participant participant = null;
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_SELECT_PARTICIPANT_BY_ID);
-            ps.setInt(ParticipantIndexes.ID,id);
+            ps.setInt(ParticipantIndexes.ID, id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 participant = new Participant(
                         rs.getInt(ParticipantIndexes.ID),
                         rs.getString(ParticipantIndexes.NAME),
@@ -134,8 +154,8 @@ public class ParticipantDAOImpl implements ParticipantDAO {
             return participant;
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_CANT_SELECT_PARTICIPANT_EXCEPTION);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 

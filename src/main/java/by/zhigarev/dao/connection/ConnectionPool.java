@@ -7,5 +7,6 @@ import java.sql.PreparedStatement;
 
 public interface ConnectionPool {
     Connection getConnection() throws DAOException;
+
     void closeConnection(Connection connection, PreparedStatement ps) throws DAOException;
 }

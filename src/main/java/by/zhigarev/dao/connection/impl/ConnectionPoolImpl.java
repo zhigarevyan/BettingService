@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -37,15 +36,17 @@ public class ConnectionPoolImpl implements ConnectionPool {
         initPool();
     }
 
-    public static ConnectionPoolImpl getInstance(){ return instance;}
+    public static ConnectionPoolImpl getInstance() {
+        return instance;
+    }
 
     private void initPool() throws ConnectionPoolInitError {
 
         ResourceBundle bundle = ResourceBundle.getBundle(DB_RESOURCE_PATH);
 
         String url = bundle.getString(DB_URL);
-        String user =bundle.getString(DB_USER);
-        String password =bundle.getString(DB_PASSWORD);
+        String user = bundle.getString(DB_USER);
+        String password = bundle.getString(DB_PASSWORD);
 
         freeConnections = new ArrayBlockingQueue<>(CONNECTION_COUNT);
         activeConnections = new ArrayBlockingQueue<>(CONNECTION_COUNT);
@@ -71,7 +72,7 @@ public class ConnectionPoolImpl implements ConnectionPool {
     public Connection getConnection() throws DAOException {
         Connection connection;
         connection = freeConnections.poll();
-        if(connection ==null){
+        if (connection == null) {
             throw new DAOException(MESSAGE_NO_FREE_CONNECTION);
         }
 

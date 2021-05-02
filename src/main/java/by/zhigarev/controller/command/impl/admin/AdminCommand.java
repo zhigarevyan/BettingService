@@ -3,7 +3,6 @@ package by.zhigarev.controller.command.impl.admin;
 import by.zhigarev.bean.User;
 import by.zhigarev.controller.command.Command;
 import by.zhigarev.controller.command.CommandProvider;
-import by.zhigarev.service.exception.ServiceException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,13 +25,13 @@ public abstract class AdminCommand implements Command {
         User user = (User) request.getSession().getAttribute(ATTRIBUTE_USER);
         if (user != null) {
             if (user.getRole() == 2) {
-                process(request,response);
+                process(request, response);
             } else {
                 request.getRequestDispatcher(NO_RIGHTS_PAGE_URL).forward(request, response);
             }
         } else {
             request.setAttribute(ATTRIBUTE_MESSAGE, MESSAGE_LOG_IN_TO_CONTINUE_LOCALE);
-            CommandProvider.getInstance().getCommand(COMMAND_SIGN_IN).execute(request,response);
+            CommandProvider.getInstance().getCommand(COMMAND_SIGN_IN).execute(request, response);
         }
     }
 

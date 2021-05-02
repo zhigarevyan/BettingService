@@ -7,6 +7,7 @@ import by.zhigarev.controller.command.CommandProvider;
 import by.zhigarev.controller.command.impl.admin.AdminCommand;
 import by.zhigarev.service.*;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class AddResult extends AdminCommand {
+    private static final Logger logger = Logger.getLogger(AddResult.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
+
     private static final String MESSAGE_SUCCESS = "success";
     private static final String MESSAGE_ERROR = "error";
     private static final String ATTRIBUTE_MESSAGE_SUCCESS = "message_success";
@@ -49,22 +53,23 @@ public class AddResult extends AdminCommand {
             List<Bet> bets = betService.getAllBetsOfEvent(eventService.getEventById(eventId));
             for (Bet bet : bets) {
                 int newStatus = Integer.parseInt(request.getParameter(String.valueOf(bet.getId())));
-                betService.updateBetStatusById(bet.getId(),newStatus);
+                betService.updateBetStatusById(bet.getId(), newStatus);
                 List<UserBet> userBets = userBetService.getAllBetsByBetId(bet.getId());
                 for (UserBet userBet : userBets) {
                     if (newStatus == STATUS_PAID) {
-                        accountService.payMoneyByAccountId(userBet.getAccount().getId(),bet.getOffer()*userBet.getBetAmount());
+                        accountService.payMoneyByAccountId(userBet.getAccount().getId(), bet.getOffer() * userBet.getBetAmount());
                     }
-                    if(newStatus == STATUS_RETURN){
-                        accountService.payMoneyByAccountId(userBet.getAccount().getId(),userBet.getBetAmount());
+                    if (newStatus == STATUS_RETURN) {
+                        accountService.payMoneyByAccountId(userBet.getAccount().getId(), userBet.getBetAmount());
                     }
                 }
             }
-            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS,MESSAGE_SUCCESS);
+            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS, MESSAGE_SUCCESS);
             commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
 
         } catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(GO_TO_ADD_RESULT_PAGE_COMMAND).execute(request, response);
         }
     }

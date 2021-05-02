@@ -1,15 +1,20 @@
 package by.zhigarev.controller.command;
 
-import by.zhigarev.controller.command.impl.*;
+import by.zhigarev.controller.command.impl.ChangeLocale;
+import by.zhigarev.controller.command.impl.Logout;
+import by.zhigarev.controller.command.impl.SignIn;
+import by.zhigarev.controller.command.impl.SignUp;
 import by.zhigarev.controller.command.impl.admin.impl.*;
 import by.zhigarev.controller.command.impl.admin.impl.go.*;
-import by.zhigarev.controller.command.impl.go.*;
+import by.zhigarev.controller.command.impl.go.GoToMainPage;
+import by.zhigarev.controller.command.impl.go.GoToSignInPage;
+import by.zhigarev.controller.command.impl.go.GoToSignUpPage;
+import by.zhigarev.controller.command.impl.go.GoToWelcomePage;
 import by.zhigarev.controller.command.impl.user.impl.AddUserBet;
 import by.zhigarev.controller.command.impl.user.impl.ChangePassword;
 import by.zhigarev.controller.command.impl.user.impl.SaveProfileChanges;
+import by.zhigarev.controller.command.impl.user.impl.TopUpBalance;
 import by.zhigarev.controller.command.impl.user.impl.go.*;
-import by.zhigarev.controller.command.impl.admin.impl.go.GoToEventInfoPageAdmin;
-import by.zhigarev.controller.command.impl.admin.impl.go.GoToFutureEventsPageAdmin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +36,7 @@ public class CommandProvider {
         commands.put(CommandName.GO_TO_ADD_PARTICIPANT_PAGE, new GoToAddParticipantPage());
         commands.put(CommandName.ADD_PARTICIPANT, new AddParticipant());
         commands.put(CommandName.GO_TO_ADD_EVENT_PAGE, new GoToAddEventPage());
+        commands.put(CommandName.TOP_UP_BALANCE, new TopUpBalance());
         commands.put(CommandName.ADD_EVENT, new AddEvent());
         commands.put(CommandName.ADD_BET, new AddBet());
         commands.put(CommandName.GO_TO_FUTURE_EVENTS_PAGE_ADMIN, new GoToFutureEventsPageAdmin());
@@ -52,6 +58,8 @@ public class CommandProvider {
         commands.put(CommandName.CHANGE_PASSWORD, new ChangePassword());
         commands.put(CommandName.DELETE_EVENT, new DeleteEvent());
         commands.put(CommandName.DELETE_BET, new DeleteBet());
+        commands.put(CommandName.SAVE_PARTICIPANT_CHANGES, new SaveParticipantChanges());
+        commands.put(CommandName.CHANGE_LOCALE, new ChangeLocale());
     }
 
 

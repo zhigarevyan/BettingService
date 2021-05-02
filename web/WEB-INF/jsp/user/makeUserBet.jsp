@@ -6,6 +6,9 @@
     <title>AddUSerBet</title>
 </head>
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 

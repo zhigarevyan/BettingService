@@ -63,10 +63,10 @@ public class EventResultDAOImpl implements EventResultDAO {
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_RESULT_BY_EVENT);
-            ps.setInt(EventResultInsertIndexes.EVENT_ID,event.getId());
+            ps.setInt(EventResultInsertIndexes.EVENT_ID, event.getId());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                 eventResultInfo = new EventResultInfo(
+                eventResultInfo = new EventResultInfo(
                         rs.getInt(EventResultIndexes.ID),
                         rs.getInt(EventResultIndexes.EVENT_ID),
                         rs.getInt(EventResultIndexes.WINNER),
@@ -83,7 +83,7 @@ public class EventResultDAOImpl implements EventResultDAO {
     }
 
     @Override
-    public boolean createResultForEvent(EventResultInfo eventResult) throws DAOException {
+    public void createResultForEvent(EventResultInfo eventResult) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
@@ -93,7 +93,6 @@ public class EventResultDAOImpl implements EventResultDAO {
             ps.setInt(EventResultInsertIndexes.WINNER, eventResult.getWinner());
             ps.setInt(EventResultInsertIndexes.WINNER_SCORE, eventResult.getFirstParticipantScore());
             ps.setInt(EventResultInsertIndexes.LOSER_SCORE, eventResult.getSecondParticipantScore());
-            return ps.execute();
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
         } finally {

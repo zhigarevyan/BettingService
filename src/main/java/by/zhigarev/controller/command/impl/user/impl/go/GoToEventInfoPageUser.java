@@ -9,6 +9,7 @@ import by.zhigarev.service.EventService;
 import by.zhigarev.service.OutcomeTypeService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class GoToEventInfoPageUser extends UserCommand {
+    private static final Logger logger = Logger.getLogger(GoToEventInfoPageUser.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
     private static final String EVENT_INFO_FRAGMENT_PATH = "eventInfo.jsp";
     private static final String USER_PAGE_PATH = "/WEB-INF/jsp/user.jsp";
     private static final String ATTRIBUTE_USER_CONTENT = "user_content";
@@ -43,7 +46,8 @@ public class GoToEventInfoPageUser extends UserCommand {
             request.setAttribute(ATTRIBUTE_USER_CONTENT, EVENT_INFO_FRAGMENT_PATH);
             request.getRequestDispatcher(USER_PAGE_PATH).forward(request, response);
         } catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             request.getRequestDispatcher(USER_PAGE_PATH).forward(request, response);
         }
     }

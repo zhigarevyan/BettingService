@@ -6,7 +6,9 @@
     <title>Title</title>
 </head>
 <body>
-
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="admin.participants" var="participants"/>
@@ -45,9 +47,6 @@
                         </div>
                         <div class="col-3 d-flex align-items-center">
                             <a type="text">${participant.name} ${participant.surName}</a>
-                        </div>
-                        <div class="col-3 d-flex align-items-center">
-                            <button class="btn btn-sm btn-danger">${delete}</button>
                         </div>
                         <div class="col-3 d-flex align-items-center">
                             <button class="btn btn-sm btn-info" form="goToEditParticipantForm" name="participantId"

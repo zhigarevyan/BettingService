@@ -1,4 +1,5 @@
 package by.zhigarev.bean.info;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ public class EventInfo {
         this.startDateTime = startDateTime;
     }
 
-    public EventInfo(int id, int firstParticipant, int secondParticipant, String location, String info, Date startDateTime,int status) {
+    public EventInfo(int id, int firstParticipant, int secondParticipant, String location, String info, Date startDateTime, int status) {
         this.id = id;
         this.firstParticipant = firstParticipant;
         this.secondParticipant = secondParticipant;

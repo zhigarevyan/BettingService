@@ -31,9 +31,9 @@ public class EventResultServiceImpl implements EventResultService {
     @Override
     public List<EventResult> getAllResults() throws ServiceException {
         List<EventResult> eventResults = new ArrayList<>();
-        try{
+        try {
             List<EventResultInfo> eventResultInfoList = eventResultDAO.getAllResults();
-            for(EventResultInfo eventResultInfo :eventResultInfoList) {
+            for (EventResultInfo eventResultInfo : eventResultInfoList) {
                 EventResult eventResult = new EventResult(
                         eventResultInfo.getId(),
                         eventService.getEventById(eventResultInfo.getEventId()),
@@ -44,33 +44,33 @@ public class EventResultServiceImpl implements EventResultService {
             }
             return eventResults;
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_ALL_RESULTS,e);
+            throw new ServiceException(MESSAGE_GET_ALL_RESULTS, e);
         }
     }
 
     @Override
     public EventResult getResultByEvent(Event event) throws ServiceException {
         EventResult eventResult = null;
-        try{
+        try {
             EventResultInfo eventResultInfo = eventResultDAO.getResultByEvent(event);
-             eventResult = new EventResult(
+            eventResult = new EventResult(
                     eventResultInfo.getId(),
                     eventService.getEventById(eventResultInfo.getEventId()),
                     participantService.getParticipantById(eventResultInfo.getWinner()),
                     eventResultInfo.getFirstParticipantScore(),
                     eventResultInfo.getSecondParticipantScore());
-             return eventResult;
+            return eventResult;
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_RESULT_BY_EVENT,e);
+            throw new ServiceException(MESSAGE_GET_RESULT_BY_EVENT, e);
         }
     }
 
     @Override
-    public boolean createResultForEvent(EventResultInfo eventResult) throws ServiceException {
-        try{
-            return eventResultDAO.createResultForEvent(eventResult);
+    public void createResultForEvent(EventResultInfo eventResult) throws ServiceException {
+        try {
+            eventResultDAO.createResultForEvent(eventResult);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_CREATE_RESULT,e);
+            throw new ServiceException(MESSAGE_CREATE_RESULT, e);
         }
     }
 }

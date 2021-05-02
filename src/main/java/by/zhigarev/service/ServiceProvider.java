@@ -1,6 +1,5 @@
 package by.zhigarev.service;
 
-import by.zhigarev.dao.OutcomeTypeDAO;
 import by.zhigarev.service.impl.*;
 
 public class ServiceProvider {

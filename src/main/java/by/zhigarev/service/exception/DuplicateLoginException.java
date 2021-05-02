@@ -1,6 +1,6 @@
 package by.zhigarev.service.exception;
 
-public class DuplicateLoginException extends ServiceException{
+public class DuplicateLoginException extends ServiceException {
     public DuplicateLoginException() {
     }
 

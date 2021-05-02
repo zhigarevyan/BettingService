@@ -1,6 +1,6 @@
 package by.zhigarev.dao.exception;
 
-public class DuplicateLoginException extends DAOException{
+public class DuplicateLoginException extends DAOException {
     public DuplicateLoginException() {
     }
 

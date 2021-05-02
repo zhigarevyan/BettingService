@@ -6,6 +6,9 @@
     <title>editUserInfo</title>
 </head>
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 <fmt:message key="login" var="login"/>
 <fmt:message key="name" var="name"/>
@@ -23,6 +26,7 @@
 <fmt:message key="regex.fio" var="regex_user_fio"/>
 <fmt:message key="regex.login" var="regex_login"/>
 <fmt:message key="regex.email" var="regex_email"/>
+<fmt:message key="regex.password" var="regex_password"/>
 
 <jsp:useBean id="date" class="java.util.Date"/>
 <fmt:formatDate var="currentDate" value="${date}" pattern="yyyy-MM-dd"/>

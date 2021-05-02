@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface OutcomeTypeService {
     OutcomeType getTypeById(int id) throws ServiceException;
+
     List<OutcomeType> getAllTypes() throws ServiceException;
-    boolean addType(String type) throws ServiceException;
+
+    void addType(String type) throws ServiceException;
 }

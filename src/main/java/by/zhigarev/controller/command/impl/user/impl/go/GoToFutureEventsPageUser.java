@@ -5,6 +5,7 @@ import by.zhigarev.bean.Event;
 import by.zhigarev.controller.command.impl.user.UserCommand;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,8 @@ import java.util.List;
 
 
 public class GoToFutureEventsPageUser extends UserCommand {
+    private static final Logger logger = Logger.getLogger(GoToFutureEventsPageUser.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
     private static final String FUTURE_EVENTS_FRAGMENT_PATH = "futureEvents.jsp";
     private static final String USER_PAGE_PATH = "WEB-INF/jsp/user.jsp";
     private static final String ATTRIBUTE_USER_CONTENT = "user_content";
@@ -29,7 +32,8 @@ public class GoToFutureEventsPageUser extends UserCommand {
             request.setAttribute(ATTRIBUTE_EVENTS, events);
             request.getRequestDispatcher(USER_PAGE_PATH).forward(request, response);
         } catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             request.getRequestDispatcher(USER_PAGE_PATH).forward(request, response);
         }
 

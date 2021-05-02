@@ -10,6 +10,9 @@ import by.zhigarev.service.AccountService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.UserService;
 import by.zhigarev.service.exception.ServiceException;
+import by.zhigarev.service.exception.WrongLoginException;
+import by.zhigarev.service.exception.WrongPasswordException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class SignIn implements Command {
+    private static final Logger logger = Logger.getLogger(SignIn.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
     private static final String USER_ATTRIBUTE = "user";
     private static final String ACCOUNT_ATTRIBUTE = "account";
     private static final String PARAMETER_PASSWORD = "password";
@@ -27,6 +32,8 @@ public class SignIn implements Command {
     private static final String MESSAGE_ERROR = "Error";
     private static final String ATTRIBUTE_MESSAGE_ERROR = "message_error";
     private static final CommandProvider commandProvider = CommandProvider.getInstance();
+    private static final String MESSAGE_WRONG_PASSWORD = "Wrong password";
+    private static final String MESSAGE_WRONG_LOGIN = "Wrong login";
 
     @Override
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -58,8 +65,17 @@ public class SignIn implements Command {
                     commandProvider.getCommand(COMMAND_GO_TO_ADMIN_PAGE).execute(request, response);
                 }
             }
+        } catch (WrongPasswordException e) {
+            logger.error(MESSAGE_WRONG_PASSWORD);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_WRONG_PASSWORD);
+            commandProvider.getCommand(GO_TO_SIGN_IN_PAGE).execute(request, response);
+        } catch (WrongLoginException e) {
+            logger.error(MESSAGE_WRONG_LOGIN);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_WRONG_LOGIN);
+            commandProvider.getCommand(GO_TO_SIGN_IN_PAGE).execute(request, response);
         } catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(GO_TO_SIGN_IN_PAGE).execute(request, response);
         }
 

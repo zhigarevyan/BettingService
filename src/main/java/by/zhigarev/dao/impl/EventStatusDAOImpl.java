@@ -7,7 +7,6 @@ import by.zhigarev.dao.connection.ConnectionPool;
 import by.zhigarev.dao.connection.impl.ConnectionPoolImpl;
 import by.zhigarev.dao.exception.DAOException;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,24 +29,25 @@ public class EventStatusDAOImpl implements EventStatusDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         EventStatus eventStatus = null;
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_SELECT_STATUS_BY_ID);
-            ps.setInt(EventStatusIndexes.ID,id);
+            ps.setInt(EventStatusIndexes.ID, id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                eventStatus = new EventStatus(rs.getInt(EventStatusIndexes.ID),rs.getString(EventStatusIndexes.STATUS));
+            while (rs.next()) {
+                eventStatus = new EventStatus(rs.getInt(EventStatusIndexes.ID), rs.getString(EventStatusIndexes.STATUS));
             }
             return eventStatus;
         } catch (DAOException e) {
-            throw new DAOException(MESSAGE_SELECT_STATUS_EXCEPTION,e);
+            throw new DAOException(MESSAGE_SELECT_STATUS_EXCEPTION, e);
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
-    private static class EventStatusIndexes{
+
+    private static class EventStatusIndexes {
         private static final int ID = 1;
         private static final int STATUS = 2;
     }

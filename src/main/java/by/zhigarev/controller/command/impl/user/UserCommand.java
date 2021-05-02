@@ -2,7 +2,6 @@ package by.zhigarev.controller.command.impl.user;
 
 import by.zhigarev.controller.command.Command;
 import by.zhigarev.controller.command.CommandProvider;
-import by.zhigarev.service.exception.ServiceException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,16 +16,15 @@ public abstract class UserCommand implements Command {
 
 
     public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        checkAuthAndProcess(request,response);
+        checkAuthAndProcess(request, response);
     }
 
     private void checkAuthAndProcess(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if(request.getSession().getAttribute(ATTRIBUTE_USER) == null){
-            request.setAttribute(ATTRIBUTE_MESSAGE,MESSAGE_SIGN_IN);
-            CommandProvider.getInstance().getCommand(COMMAND_SIGN_IN).execute(request,response);
-        }
-        else {
-            process(request,response);
+        if (request.getSession().getAttribute(ATTRIBUTE_USER) == null) {
+            request.setAttribute(ATTRIBUTE_MESSAGE, MESSAGE_SIGN_IN);
+            CommandProvider.getInstance().getCommand(COMMAND_SIGN_IN).execute(request, response);
+        } else {
+            process(request, response);
         }
     }
 

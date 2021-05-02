@@ -1,6 +1,5 @@
 package by.zhigarev.dao;
 
-import by.zhigarev.bean.BetStatus;
 import by.zhigarev.dao.impl.*;
 
 public class DAOProvider {
@@ -21,7 +20,7 @@ public class DAOProvider {
     private static final UserBetDAO userBetDAO = UserBetDAOImpl.getInstance();
     private static final EventResultDAO eventResultDAO = EventResultDAOImpl.getInstance();
 
-    public UserDAO getUserDAO() {
+    public static UserDAO getUserDAO() {
         return userDAO;
     }
 

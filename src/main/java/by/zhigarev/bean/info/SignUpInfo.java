@@ -9,7 +9,7 @@ public class SignUpInfo {
     private String login;
     private String password;
     private String email;
-    private Date birthdayDate ;
+    private Date birthdayDate;
 
     public SignUpInfo(String name, String surName, String login, String password, String email, Date birthdayDate) {
         this.name = name;

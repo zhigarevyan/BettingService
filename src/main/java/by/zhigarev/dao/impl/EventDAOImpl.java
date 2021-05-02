@@ -1,6 +1,5 @@
 package by.zhigarev.dao.impl;
 
-import by.zhigarev.bean.Event;
 import by.zhigarev.bean.info.EventInfo;
 import by.zhigarev.dao.EventDAO;
 import by.zhigarev.dao.connection.ConnectionPool;
@@ -16,7 +15,6 @@ public class EventDAOImpl implements EventDAO {
     private static final String SQL_GET_ALL_FUTURE_EVENTS = "select * from Events where status = 1 order by start_date_time desc";
     private static final String SQL_GET_EVENT_BY_ID = "select * from Events where id = ?";
     private static final String SQL_CHANGE_STATUS_TO_PAST = "update Events set status = 2 where id = ?";
-    private static final String SQL_DELETE_EVENT_BY_ID = "delete from events where id = ?";
 
     private static final String MESSAGE_CREATE_EVENT_EXCEPTION = "Can't create event";
     private static final String MESSAGE_GET_FUTURE_EVENTS_EXCEPTION = "Can't get future events";
@@ -59,7 +57,7 @@ public class EventDAOImpl implements EventDAO {
     }
 
     @Override
-    public boolean createEvent(EventInfo event) throws DAOException {
+    public void createEvent(EventInfo event) throws DAOException {
         final int STATUS = 1;
         Connection connection = null;
         PreparedStatement ps = null;
@@ -72,7 +70,7 @@ public class EventDAOImpl implements EventDAO {
             ps.setString(EventInsertIndexes.INFO, event.getInfo());
             ps.setDate(EventInsertIndexes.START_DATE_TIME, (Date) event.getStartDateTime());
             ps.setInt(EventInsertIndexes.STATUS, STATUS);
-            return ps.execute();
+            ps.execute();
 
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_CREATE_EVENT_EXCEPTION, e);
@@ -104,69 +102,43 @@ public class EventDAOImpl implements EventDAO {
             return event;
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_GET_EVENT_BY_ID_EXCEPTION, e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
     @Override
-    public boolean deleteEventById(int eventId) throws DAOException {
+    public void changeEventStatusToPastById(int id) throws DAOException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = connectionPool.getConnection();
-            ps = connection.prepareStatement(SQL_DELETE_EVENT_BY_ID);
-            ps.setInt(EventIndexes.ID,eventId);
-            return ps.execute();
-        }catch (SQLException e) {
+            ps = connection.prepareStatement(SQL_CHANGE_STATUS_TO_PAST);
+            ps.setInt(EventIndexes.ID, id);
+            ps.execute();
+        } catch (SQLException e) {
             throw new DAOException(MESSAGE_GET_EVENT_BY_ID_EXCEPTION, e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
-        }
-    }
-
-    @Override
-    public boolean updateEvent(Event oldEvent, Event newEvent) throws DAOException {
-        return false;
-    }
-
-    @Override
-    public List<EventInfo> getAllPastEvents() throws DAOException {
-        return null;
-    }
-
-    @Override
-    public boolean changeEventStatusToPastById(int id) throws DAOException {
-        Connection connection = null;
-        PreparedStatement ps = null;
-        try{
-            connection = connectionPool.getConnection();
-            ps =connection.prepareStatement(SQL_CHANGE_STATUS_TO_PAST);
-            ps.setInt(EventIndexes.ID,id);
-            return ps.execute();
-        }catch (SQLException e) {
-            throw new DAOException(MESSAGE_GET_EVENT_BY_ID_EXCEPTION, e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
     private static class EventInsertIndexes {
-        public static final int FIRST_PARTICIPANT = 1;
-        public static final int SECOND_PARTICIPANT = 2;
-        public static final int LOCATION = 3;
-        public static final int INFO = 4;
-        public static final int START_DATE_TIME = 5;
-        public static final int STATUS = 6;
+        static final int FIRST_PARTICIPANT = 1;
+        static final int SECOND_PARTICIPANT = 2;
+        static final int LOCATION = 3;
+        static final int INFO = 4;
+        static final int START_DATE_TIME = 5;
+        static final int STATUS = 6;
     }
 
     private static class EventIndexes {
-        public static final int ID = 1;
-        public static final int FIRST_PARTICIPANT = 2;
-        public static final int SECOND_PARTICIPANT = 3;
-        public static final int LOCATION = 4;
-        public static final int INFO = 5;
-        public static final int START_DATE_TIME = 6;
-        public static final int STATUS = 7;
+        static final int ID = 1;
+        static final int FIRST_PARTICIPANT = 2;
+        static final int SECOND_PARTICIPANT = 3;
+        static final int LOCATION = 4;
+        static final int INFO = 5;
+        static final int START_DATE_TIME = 6;
+        static final int STATUS = 7;
     }
 }

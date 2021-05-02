@@ -1,6 +1,6 @@
 package by.zhigarev.service.exception;
 
-public class DuplicateBetException extends ServiceException{
+public class DuplicateBetException extends ServiceException {
     public DuplicateBetException() {
     }
 

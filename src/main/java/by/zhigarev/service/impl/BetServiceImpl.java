@@ -13,7 +13,8 @@ import by.zhigarev.service.EventService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.exception.DuplicateBetException;
 import by.zhigarev.service.exception.ServiceException;
-
+import by.zhigarev.service.exception.ValidationException;
+import by.zhigarev.service.validator.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class BetServiceImpl implements BetService {
     private static final String MESSAGE_CREATE_EVENT_BETS_EXCEPTION = "Cant create event bets exception";
     private static final String MESSAGE_DUPLICATE_BET_EXCEPTION = "Duplicate bet";
     private static final String MESSAGE_DELETE_BET_EXCEPTION = "Delete bet exception";
+    private static final String MESSAGE_VALIDATION_OFFER_EXCEPTION = "Not valid offer";
+    private static final String MESSAGE_VALIDATION_EXCEPTION = "Validation exception";
 
     public static BetServiceImpl getInstance() {
         return instance;
@@ -56,6 +59,9 @@ public class BetServiceImpl implements BetService {
 
     @Override
     public Bet getBetById(int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         Bet bet;
         try {
             BetInfo betInfo = betDAO.getBetById(id);
@@ -71,35 +77,45 @@ public class BetServiceImpl implements BetService {
     }
 
     @Override
-    public boolean createBetForEvent(BetInfo betInfo) throws ServiceException {
+    public void createBetForEvent(BetInfo betInfo) throws ServiceException {
+        final int MINIMAL_OFFER_VALUE = 1;
         try {
             List<BetInfo> betInfoList = betDAO.getAllBetsOfEventById(betInfo.getEventId());
-            for(BetInfo betInfoItem : betInfoList){
-                if(betInfoItem.getOutcome() == betInfo.getOutcome()){
+            for (BetInfo betInfoItem : betInfoList) {
+                if (betInfoItem.getOutcome() == betInfo.getOutcome()) {
                     throw new DuplicateBetException(MESSAGE_DUPLICATE_BET_EXCEPTION);
                 }
+                if (betInfoItem.getOffer() < MINIMAL_OFFER_VALUE) {
+                    throw new ValidationException(MESSAGE_VALIDATION_OFFER_EXCEPTION);
+                }
             }
-            return betDAO.createBetForEvent(betInfo);
+            betDAO.createBetForEvent(betInfo);
         } catch (DAOException e) {
             throw new ServiceException(MESSAGE_CREATE_EVENT_BETS_EXCEPTION, e);
         }
     }
 
     @Override
-    public boolean updateBetStatusById(int betId, int betStatusId) throws ServiceException {
+    public void updateBetStatusById(int betId, int betStatusId) throws ServiceException {
+        if (!Validator.isValidId(betId) && !Validator.isValidId(betStatusId)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         try {
-            return betDAO.updateBetStatusById(betId, betStatusId);
+            betDAO.updateBetStatusById(betId, betStatusId);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_CHANGE_BET_STATUS_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_CHANGE_BET_STATUS_EXCEPTION, e);
         }
     }
 
     @Override
     public void deleteBetById(int betId) throws ServiceException {
-        try{
+        if (!Validator.isValidId(betId)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
+        try {
             betDAO.deleteBetById(betId);
-        }catch (DAOException e) {
-            throw new ServiceException(MESSAGE_DELETE_BET_EXCEPTION,e);
+        } catch (DAOException e) {
+            throw new ServiceException(MESSAGE_DELETE_BET_EXCEPTION, e);
         }
     }
 }

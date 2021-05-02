@@ -7,6 +7,7 @@ import by.zhigarev.controller.command.CommandProvider;
 import by.zhigarev.controller.command.impl.admin.AdminCommand;
 import by.zhigarev.service.*;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class DeleteEvent extends AdminCommand {
+    private static final Logger logger = Logger.getLogger(DeleteEvent.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
+
     private static final String PARAMETER_EVENT_ID = "eventId";
     private static final String ATTRIBUTE_MESSAGE_SUCCESS = "message_success";
     private static final String ATTRIBUTE_MESSAGE_ERROR = "message_error";
@@ -44,10 +48,11 @@ public class DeleteEvent extends AdminCommand {
                 }
             }
             eventService.changeEventStatusToPastById(eventId);
-            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS,MESSAGE_SUCCESS);
+            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS, MESSAGE_SUCCESS);
             commandProvider.getCommand(GO_TO_FUTURE_EVENTS_PAGE_COMMAND).execute(request, response);
-        }catch (ServiceException e){
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+        } catch (ServiceException e) {
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(GO_TO_FUTURE_EVENTS_PAGE_COMMAND).execute(request, response);
         }
     }

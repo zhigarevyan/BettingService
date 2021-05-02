@@ -1,4 +1,5 @@
 package by.zhigarev.service.impl;
+
 import by.zhigarev.bean.OutcomeType;
 import by.zhigarev.dao.DAOProvider;
 import by.zhigarev.dao.OutcomeTypeDAO;
@@ -26,36 +27,39 @@ public class OutcomeTypeServiceImpl implements OutcomeTypeService {
 
     @Override
     public OutcomeType getTypeById(int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         try {
             return outcomeTypeDAO.getTypeById(id);
-        }catch (DAOException e){
-            throw new ServiceException(MESSAGE_GET_TYPE_BY_ID_EXCEPTION,e);
+        } catch (DAOException e) {
+            throw new ServiceException(MESSAGE_GET_TYPE_BY_ID_EXCEPTION, e);
         }
     }
 
     @Override
     public List<OutcomeType> getAllTypes() throws ServiceException {
-        try{
+        try {
             return outcomeTypeDAO.getAllTypes();
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_ALL_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_GET_ALL_EXCEPTION, e);
         }
     }
 
     @Override
-    public boolean addType(String type) throws ServiceException {
-        if(!Validator.isValidRequiredField(type)){
+    public void addType(String type) throws ServiceException {
+        if (!Validator.isValidRequiredField(type)) {
             throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
         }
-        try{
-            for(OutcomeType outcomeType : outcomeTypeDAO.getAllTypes()){
-                if(outcomeType.getType().equalsIgnoreCase(type)){
+        try {
+            for (OutcomeType outcomeType : outcomeTypeDAO.getAllTypes()) {
+                if (outcomeType.getType().equalsIgnoreCase(type)) {
                     throw new DuplicateOutcomeTypeException(MESSAGE_DUPLICATE_OUTCOME_TYPE_EXCEPTION);
                 }
             }
-            return outcomeTypeDAO.addType(type);
+            outcomeTypeDAO.addType(type);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_ADD_TYPE_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_ADD_TYPE_EXCEPTION, e);
         }
     }
 }

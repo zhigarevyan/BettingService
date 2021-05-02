@@ -1,6 +1,6 @@
 package by.zhigarev.service.exception;
 
-public class DuplicateParticipantException extends ServiceException{
+public class DuplicateParticipantException extends ServiceException {
     public DuplicateParticipantException() {
     }
 

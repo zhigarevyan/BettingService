@@ -5,7 +5,10 @@ import by.zhigarev.bean.Event;
 import by.zhigarev.bean.EventStatus;
 import by.zhigarev.bean.Participant;
 import by.zhigarev.bean.info.EventInfo;
-import by.zhigarev.dao.*;
+import by.zhigarev.dao.DAOProvider;
+import by.zhigarev.dao.EventDAO;
+import by.zhigarev.dao.EventStatusDAO;
+import by.zhigarev.dao.ParticipantDAO;
 import by.zhigarev.dao.exception.DAOException;
 import by.zhigarev.service.EventService;
 import by.zhigarev.service.ServiceProvider;
@@ -24,7 +27,6 @@ public class EventServiceImpl implements EventService {
     private static final EventStatusDAO eventStatusDAO = DAOProvider.getEventStatusDAO();
 
     private static final String MESSAGE_CREATE_EVENT_EXCEPTION = "cant create event";
-    private static final String MESSAGE_DELETE_EVENT_EXCEPTION = "cant delete event";
     private static final String MESSAGE_CHANGE_STATUS_TO_PAST = "cant change status of event";
     private static final String MESSAGE_GET_FUTURE_EVENTS_EXCEPTION = "cant get future events";
     private static final String MESSAGE_GET_EVENT_BY_ID_EXCEPTION = "cant get event by id";
@@ -37,12 +39,12 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public boolean createEvent(EventInfo event) throws ServiceException {
-        if(!Validator.isValidEvent(event)){
+    public void createEvent(EventInfo event) throws ServiceException {
+        if (!Validator.isValidEvent(event)) {
             throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
         }
         try {
-            return eventDAO.createEvent(event);
+            eventDAO.createEvent(event);
         } catch (DAOException e) {
             throw new ServiceException(MESSAGE_CREATE_EVENT_EXCEPTION, e);
         }
@@ -50,8 +52,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getEventById(int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         Event event = null;
-        int STATUS = 1;
         try {
             EventInfo eventInfo = eventDAO.getEventById(id);
             Participant p1 = participantDAO.getParticipantById(eventInfo.getFirstParticipant());
@@ -66,8 +70,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getAllFutureEvents() throws ServiceException {
+        final int STATUS = 1;
         try {
-            int STATUS = 1;
             List<Event> events = new ArrayList<>();
 
             for (EventInfo eventInfo : eventDAO.getAllFutureEvents()) {
@@ -85,6 +89,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getEventByBetId(int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
         try {
             Bet bet = ServiceProvider.getBetService().getBetById(id);
             return getEventById(bet.getEvent().getId());
@@ -94,20 +101,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public boolean deleteEventById(int eventId) throws ServiceException {
-        try{
-            return eventDAO.deleteEventById(eventId);
-        }catch (DAOException e){
-            throw new ServiceException(MESSAGE_DELETE_EVENT_EXCEPTION,e);
+    public void changeEventStatusToPastById(int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
         }
-    }
-
-    @Override
-    public boolean changeEventStatusToPastById(int id) throws ServiceException {
-        try{
-            return eventDAO.changeEventStatusToPastById(id);
+        try {
+            eventDAO.changeEventStatusToPastById(id);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_CHANGE_STATUS_TO_PAST,e);
+            throw new ServiceException(MESSAGE_CHANGE_STATUS_TO_PAST, e);
         }
     }
 }

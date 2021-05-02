@@ -1,6 +1,6 @@
 package by.zhigarev.service.exception;
 
-public class ValidationException extends ServiceException{
+public class ValidationException extends ServiceException {
     public ValidationException() {
     }
 

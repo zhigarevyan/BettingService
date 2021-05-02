@@ -1,6 +1,6 @@
 package by.zhigarev.dao.exception;
 
-public class ConnectionPoolInitError extends Error{
+public class ConnectionPoolInitError extends Error {
     public ConnectionPoolInitError() {
         super();
     }

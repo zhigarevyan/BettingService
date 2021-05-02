@@ -2,8 +2,8 @@ package by.zhigarev.controller.command.impl;
 
 
 import by.zhigarev.bean.Account;
-import by.zhigarev.bean.info.SignUpInfo;
 import by.zhigarev.bean.User;
+import by.zhigarev.bean.info.SignUpInfo;
 import by.zhigarev.controller.command.Command;
 import by.zhigarev.controller.command.CommandProvider;
 import by.zhigarev.dao.exception.DuplicateLoginException;
@@ -11,6 +11,7 @@ import by.zhigarev.service.AccountService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.UserService;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +20,11 @@ import java.io.IOException;
 import java.sql.Date;
 
 public class SignUp implements Command {
+    private static final Logger logger = Logger.getLogger(SignUp.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
     private static final String COMMAND_GO_TO_USER_PAGE = "GO_TO_USER_PAGE";
     private static final String COMMAND_GO_SIGN_UP_PAGE = "GO_TO_SIGN_UP_PAGE";
-    private static final String DUPLICATE_LOGIN_MESSAGE = "duplicate login message";
+    private static final String DUPLICATE_LOGIN_MESSAGE = "duplicate login";
     private static final String ATTRIBUTE_MESSAGE_ERROR = "message_error";
     private static final String MESSAGE_ERROR = "Error";
     private static final String ATTRIBUTE_USER = "user";
@@ -57,11 +60,13 @@ public class SignUp implements Command {
             request.getSession(true).setAttribute(ATTRIBUTE_ACCOUNT, account);
             commandProvider.getCommand(COMMAND_GO_TO_USER_PAGE).execute(request, response);
 
-        } catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
-            commandProvider.getCommand(COMMAND_GO_SIGN_UP_PAGE).execute(request, response);
         } catch (DuplicateLoginException e) {
+            logger.error(DUPLICATE_LOGIN_MESSAGE);
             request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, DUPLICATE_LOGIN_MESSAGE);
+            commandProvider.getCommand(COMMAND_GO_SIGN_UP_PAGE).execute(request, response);
+        } catch (ServiceException e) {
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(COMMAND_GO_SIGN_UP_PAGE).execute(request, response);
         }
     }

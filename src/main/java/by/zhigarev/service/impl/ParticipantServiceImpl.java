@@ -21,55 +21,70 @@ public class ParticipantServiceImpl implements ParticipantService {
     private static final String MESSAGE_GET_ALL_PARTICIPANTS_EXCEPTION = "Cant get all participants";
     private static final String MESSAGE_GET_PARTICIPANT_EXCEPTION = "Cant get participant";
     private static final String MESSAGE_DUPLICATE_PARTICIPANT_EXCEPTION = "Duplicate participant exception";
+    private static final String MESSAGE_UPDATE_EXCEPTION = "Cant update";
 
     public static ParticipantServiceImpl getInstance() {
         return instance;
     }
 
     @Override
-    public boolean addParticipant(ParticipantInfo participant) throws ServiceException {
-        if(!Validator.isValidParticipant(participant)){
+    public void addParticipant(ParticipantInfo participant) throws ServiceException {
+        if (!Validator.isValidParticipant(participant)) {
             throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
         }
         try {
-            if(getParticipant(participant.getName(),participant.getSurName())!=null){
+            if (getParticipant(participant.getName(), participant.getSurName()) != null) {
                 throw new DuplicateParticipantException(MESSAGE_DUPLICATE_PARTICIPANT_EXCEPTION);
             }
-            return participantDAO.addParticipant(participant);
+            participantDAO.addParticipant(participant);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_ADD_PARTICIPANT_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_ADD_PARTICIPANT_EXCEPTION, e);
         }
     }
 
     @Override
-    public boolean deleteParticipant(Participant participant) {
-        return false;
+    public void updateParticipantById(ParticipantInfo participant, int id) throws ServiceException {
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
+        try {
+            Participant participantDB = getParticipant(participant.getName(), participant.getSurName());
+            if (participantDB != null && participantDB.getId() != id) {
+                throw new DuplicateParticipantException(MESSAGE_DUPLICATE_PARTICIPANT_EXCEPTION);
+            }
+            participantDAO.updateParticipant(participant, id);
+        } catch (DAOException e) {
+            throw new ServiceException(MESSAGE_UPDATE_EXCEPTION, e);
+        }
     }
 
     @Override
     public List<Participant> getAllParticipants() throws ServiceException {
-        try{
+        try {
             return participantDAO.getAllParticipants();
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_ALL_PARTICIPANTS_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_GET_ALL_PARTICIPANTS_EXCEPTION, e);
         }
     }
 
-    @Override
-    public Participant getParticipant(String name, String surname) throws ServiceException {
-        try{
+
+    private Participant getParticipant(String name, String surname) throws ServiceException {
+        try {
             return participantDAO.getParticipantByName(name, surname);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_PARTICIPANT_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_GET_PARTICIPANT_EXCEPTION, e);
         }
     }
 
     @Override
     public Participant getParticipantById(int id) throws ServiceException {
-        try{
+        if (!Validator.isValidId(id)) {
+            throw new ValidationException(MESSAGE_VALIDATION_EXCEPTION);
+        }
+        try {
             return participantDAO.getParticipantById(id);
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_PARTICIPANT_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_GET_PARTICIPANT_EXCEPTION, e);
         }
     }
 }

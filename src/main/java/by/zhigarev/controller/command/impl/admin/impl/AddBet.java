@@ -7,6 +7,7 @@ import by.zhigarev.service.BetService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.exception.DuplicateBetException;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class AddBet extends AdminCommand {
+    private static final Logger logger = Logger.getLogger(AddBet.class);
+    private static final String MESSAGE_SERVICE_ECXEPTION = "service exception";
     private static final String OUTCOME_TYPE_PARAMETER = "outcomeType";
     private static final String EVENT_ID_PARAMETER = "eventId";
     private static final String OFFER_PARAMETER = "offer";
@@ -31,20 +34,21 @@ public class AddBet extends AdminCommand {
         int eventId = Integer.parseInt(request.getParameter(EVENT_ID_PARAMETER));
         int outcomeTypeId = Integer.parseInt(request.getParameter(OUTCOME_TYPE_PARAMETER));
         double offer = Double.parseDouble(request.getParameter(OFFER_PARAMETER));
-        try{
+        try {
             betService.createBetForEvent(
-                    new BetInfo(0,eventId,outcomeTypeId,0,offer)
+                    new BetInfo(0, eventId, outcomeTypeId, 0, offer)
             );
-            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS,MESSAGE_SUCCESS);
-            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request,response);
+            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS, MESSAGE_SUCCESS);
+            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
 
-        }catch (DuplicateBetException e){
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_DUPLICATE_BET);
-            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request,response);
-        }
-        catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
-            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request,response);
+        } catch (DuplicateBetException e) {
+            logger.error(MESSAGE_DUPLICATE_BET);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_DUPLICATE_BET);
+            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
+        } catch (ServiceException e) {
+            logger.error(MESSAGE_SERVICE_ECXEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
+            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
         }
     }
 }

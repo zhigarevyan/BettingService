@@ -6,6 +6,9 @@
     <title>addParticipant</title>
 </head>
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="admin.addParticipant" var="addParticipant"/>
@@ -42,10 +45,9 @@
 
                 <div class="form-group">
                     <label for="participantInfoInput">${info} : </label>
-                    <input type="text" id="participantInfoInput" required pattern="${regex_requiredField}" class="form-control input-lg" name="info"/>
+                    <input type="text" id="participantInfoInput" required pattern="${regex_requiredField}"
+                           class="form-control input-lg" name="info"/>
                 </div>
-
-
                 <div class="form-group pt-3">
                     <button type="submit" class="btn btn-success">${add.toUpperCase()}</button>
                 </div>

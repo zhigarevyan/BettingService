@@ -5,6 +5,9 @@
 <head>
     <title>LUCKYBET</title>
 </head>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <jsp:include page="header.jsp"/>
 
 
@@ -46,6 +49,6 @@
         <jsp:include page="${admin_content}"/>
     </div>
 </div>
-    <jsp:include page="footer.jsp"/>
+<jsp:include page="footer.jsp"/>
 </body>
 </html>

@@ -19,7 +19,6 @@ public class BetStatusDAOImpl implements BetStatusDAO {
     private static final String SQL_SELECT_ALL_STATUSES = "select * from BetStatuses";
     private static final ConnectionPool connectionPool = ConnectionPoolImpl.getInstance();
     private static final String MESSAGE_SQL_EXCEPTION = "SQL exception dao layer";
-    private static final String MESSAGE_SELECT_STATUS_EXCEPTION = "cant select status";
     private static final BetStatusDAOImpl instance = new BetStatusDAOImpl();
 
     public static BetStatusDAOImpl getInstance() {
@@ -32,19 +31,19 @@ public class BetStatusDAOImpl implements BetStatusDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         BetStatus betStatus = null;
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_SELECT_STATUS_BY_ID);
-            ps.setInt(BetStatusIndexes.ID,id);
+            ps.setInt(BetStatusIndexes.ID, id);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                betStatus = new BetStatus(rs.getInt(BetStatusIndexes.ID),rs.getString(BetStatusIndexes.STATUS));
+            while (rs.next()) {
+                betStatus = new BetStatus(rs.getInt(BetStatusIndexes.ID), rs.getString(BetStatusIndexes.STATUS));
             }
             return betStatus;
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
@@ -53,11 +52,11 @@ public class BetStatusDAOImpl implements BetStatusDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         List<BetStatus> betStatusList = new ArrayList<>();
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_SELECT_ALL_STATUSES);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 BetStatus betStatus = new BetStatus(
                         rs.getInt(BetStatusIndexes.ID),
                         rs.getString(BetStatusIndexes.STATUS));
@@ -65,9 +64,9 @@ public class BetStatusDAOImpl implements BetStatusDAO {
             }
             return betStatusList;
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 

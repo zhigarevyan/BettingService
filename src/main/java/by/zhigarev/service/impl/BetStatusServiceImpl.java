@@ -20,10 +20,10 @@ public class BetStatusServiceImpl implements BetStatusService {
 
     @Override
     public List<BetStatus> getAllStatuses() throws ServiceException {
-        try{
+        try {
             return betStatusDAO.getAllStatuses();
         } catch (DAOException e) {
-            throw new ServiceException(MESSAGE_GET_ALL_STATUSES_EXCEPTION,e);
+            throw new ServiceException(MESSAGE_GET_ALL_STATUSES_EXCEPTION, e);
         }
     }
 }

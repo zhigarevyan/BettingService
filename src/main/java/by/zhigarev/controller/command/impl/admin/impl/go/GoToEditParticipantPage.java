@@ -6,6 +6,7 @@ import by.zhigarev.controller.command.impl.admin.AdminCommand;
 import by.zhigarev.service.ParticipantService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class GoToEditParticipantPage extends AdminCommand {
+    private static final Logger logger = Logger.getLogger(GoToEditParticipantPage.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
     private static final String EDIT_PARTICIPANT_FRAGMENT_PATH = "admin/editParticipant.jsp";
     private static final String ADMIN_PAGE_PATH = "WEB-INF/jsp/admin.jsp";
     private static final String ATTRIBUTE_ADMIN_CONTENT = "admin_content";
@@ -27,10 +30,11 @@ public class GoToEditParticipantPage extends AdminCommand {
         int participantId = Integer.parseInt(request.getParameter(PARAMETER_PARTICIPANT_ID));
         try {
             Participant participant = participantService.getParticipantById(participantId);
-            request.setAttribute(ATTRIBUTE_PARTICIPANT,participant);
+            request.setAttribute(ATTRIBUTE_PARTICIPANT, participant);
             request.setAttribute(ATTRIBUTE_ADMIN_CONTENT, EDIT_PARTICIPANT_FRAGMENT_PATH);
             request.getRequestDispatcher(ADMIN_PAGE_PATH).forward(request, response);
         } catch (ServiceException e) {
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
             commandProvider.getCommand(GO_TO_PARTICIPANTS_PAGE_COMMAND).execute(request, response);
         }
     }

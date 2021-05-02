@@ -34,12 +34,12 @@ public class BetDAOImpl implements BetDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         List<BetInfo> bets = new ArrayList<>();
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_ALL_EVENT_BETS);
-            ps.setInt(InsertBetIndexes.EVENT_ID,event.getId());
+            ps.setInt(InsertBetIndexes.EVENT_ID, event.getId());
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 BetInfo bet = new BetInfo(rs.getInt(BetIndexes.ID),
                         rs.getInt(BetIndexes.EVENT_ID),
                         rs.getInt(BetIndexes.OUTCOME),
@@ -49,9 +49,9 @@ public class BetDAOImpl implements BetDAO {
             }
             return bets;
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
@@ -59,12 +59,12 @@ public class BetDAOImpl implements BetDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         List<BetInfo> bets = new ArrayList<>();
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_ALL_EVENT_BETS);
-            ps.setInt(InsertBetIndexes.EVENT_ID,eventId);
+            ps.setInt(InsertBetIndexes.EVENT_ID, eventId);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 BetInfo bet = new BetInfo(rs.getInt(BetIndexes.ID),
                         rs.getInt(BetIndexes.EVENT_ID),
                         rs.getInt(BetIndexes.OUTCOME),
@@ -74,9 +74,9 @@ public class BetDAOImpl implements BetDAO {
             }
             return bets;
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
@@ -87,30 +87,30 @@ public class BetDAOImpl implements BetDAO {
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_DELETE_BET_BY_ID);
-            ps.setInt(BetIndexes.ID,id);
+            ps.setInt(BetIndexes.ID, id);
             ps.execute();
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
     @Override
-    public boolean createBetForEvent(BetInfo betInfo) throws DAOException {
-        int BET_STATUS = 1;
+    public void createBetForEvent(BetInfo betInfo) throws DAOException {
+        final int BET_STATUS = 1;
         Connection connection = null;
         PreparedStatement ps = null;
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_INSERT_EVENT_BETS);
-            ps.setInt(InsertBetIndexes.EVENT_ID,betInfo.getEventId());
-            ps.setInt(InsertBetIndexes.OUTCOME,betInfo.getOutcome());
-            ps.setInt(InsertBetIndexes.STATUS,BET_STATUS);
-            ps.setDouble(InsertBetIndexes.OFFER,betInfo.getOffer());
-            return ps.execute();
+            ps.setInt(InsertBetIndexes.EVENT_ID, betInfo.getEventId());
+            ps.setInt(InsertBetIndexes.OUTCOME, betInfo.getOutcome());
+            ps.setInt(InsertBetIndexes.STATUS, BET_STATUS);
+            ps.setDouble(InsertBetIndexes.OFFER, betInfo.getOffer());
+            ps.execute();
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
         }
     }
 
@@ -119,13 +119,13 @@ public class BetDAOImpl implements BetDAO {
         Connection connection = null;
         PreparedStatement ps = null;
         BetInfo bet = null;
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_GET_BET_BY_ID);
-            ps.setInt(InsertBetIndexes.EVENT_ID,id);
+            ps.setInt(InsertBetIndexes.EVENT_ID, id);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
-                bet= new BetInfo(rs.getInt(BetIndexes.ID),
+            while (rs.next()) {
+                bet = new BetInfo(rs.getInt(BetIndexes.ID),
                         rs.getInt(BetIndexes.EVENT_ID),
                         rs.getInt(BetIndexes.OUTCOME),
                         rs.getInt(BetIndexes.STATUS),
@@ -134,33 +134,33 @@ public class BetDAOImpl implements BetDAO {
             }
             return bet;
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
     @Override
-    public boolean updateBetStatusById(int betId, int betStatusId) throws DAOException {
-        int BET_STATUS =1;
-        int BET_ID =2;
+    public void updateBetStatusById(int betId, int betStatusId) throws DAOException {
+        final int BET_STATUS = 1;
+        final int BET_ID = 2;
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_UPDATE_BET_STATUS);
-            ps.setInt(BET_STATUS,betStatusId);
-            ps.setInt(BET_ID,betId);
-            return ps.execute();
+            ps.setInt(BET_STATUS, betStatusId);
+            ps.setInt(BET_ID, betId);
+            ps.execute();
         } catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION,e);
-        }finally {
-            connectionPool.closeConnection(connection,ps);
+            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
+        } finally {
+            connectionPool.closeConnection(connection, ps);
         }
     }
 
 
-    private static class BetIndexes{
+    private static class BetIndexes {
         private static final int ID = 1;
         private static final int EVENT_ID = 2;
         private static final int OUTCOME = 3;
@@ -168,7 +168,7 @@ public class BetDAOImpl implements BetDAO {
         private static final int OFFER = 5;
     }
 
-    private static class InsertBetIndexes{
+    private static class InsertBetIndexes {
         private static final int EVENT_ID = 1;
         private static final int OUTCOME = 2;
         private static final int STATUS = 3;

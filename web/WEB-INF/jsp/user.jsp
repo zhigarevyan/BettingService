@@ -9,6 +9,9 @@
 
 
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="user.line" var="line"/>
@@ -36,7 +39,8 @@
                        href="Controller?command=go_to_future_events_page_user">${line}</a>
                     <a class="btn btn-secondary" type="button"
                        href="Controller?command=go_to_event_results_page">${results}</a>
-                    <a class="btn btn-secondary" type="button" href="Controller?command=go_to_user_bets_page">${bets}</a>
+                    <a class="btn btn-secondary" type="button"
+                       href="Controller?command=go_to_user_bets_page">${bets}</a>
                 </div>
             </div>
         </div>

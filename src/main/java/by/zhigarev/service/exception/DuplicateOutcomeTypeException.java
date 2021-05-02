@@ -1,6 +1,6 @@
 package by.zhigarev.service.exception;
 
-public class DuplicateOutcomeTypeException extends ServiceException{
+public class DuplicateOutcomeTypeException extends ServiceException {
     public DuplicateOutcomeTypeException() {
     }
 

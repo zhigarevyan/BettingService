@@ -6,6 +6,7 @@ import by.zhigarev.service.OutcomeTypeService;
 import by.zhigarev.service.ServiceProvider;
 import by.zhigarev.service.exception.DuplicateOutcomeTypeException;
 import by.zhigarev.service.exception.ServiceException;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class AddOutcomeType extends AdminCommand {
+    private static final Logger logger = Logger.getLogger(AddOutcomeType.class);
+    private static final String MESSAGE_SERVICE_EXCEPTION = "service exception";
+
     private static final String OUTCOME_TYPE_PARAMETER = "outcomeType";
-    private static final String ATTRIBUTE_MESSAGE_ERROR ="message_error";
-    private static final String ATTRIBUTE_MESSAGE_SUCCESS ="message_success";
+    private static final String ATTRIBUTE_MESSAGE_ERROR = "message_error";
+    private static final String ATTRIBUTE_MESSAGE_SUCCESS = "message_success";
     private static final String MESSAGE_ERROR = "Error";
     private static final String MESSAGE_DUPLICATE_OUTCOME_TYPE = "Duplicate outcome type";
     private static final String MESSAGE_SUCCESS = "Success";
@@ -26,17 +30,18 @@ public class AddOutcomeType extends AdminCommand {
     protected void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String outcomeType = request.getParameter(OUTCOME_TYPE_PARAMETER);
         OutcomeTypeService outcomeTypeService = ServiceProvider.getOutcomeTypeService();
-        try{
+        try {
             outcomeTypeService.addType(outcomeType);
-            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS,MESSAGE_SUCCESS);
-            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request,response);
-        }catch (DuplicateOutcomeTypeException e){
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_DUPLICATE_OUTCOME_TYPE);
-            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request,response);
-        }
-        catch (ServiceException e) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
-            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request,response);
+            request.setAttribute(ATTRIBUTE_MESSAGE_SUCCESS, MESSAGE_SUCCESS);
+            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
+        } catch (DuplicateOutcomeTypeException e) {
+            logger.error(MESSAGE_DUPLICATE_OUTCOME_TYPE);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_DUPLICATE_OUTCOME_TYPE);
+            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
+        } catch (ServiceException e) {
+            logger.error(MESSAGE_SERVICE_EXCEPTION);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
+            commandProvider.getCommand(GO_TO_EVENT_INFO_PAGE_ADMIN_COMMAND).execute(request, response);
         }
     }
 }

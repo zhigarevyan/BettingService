@@ -25,7 +25,7 @@ public class GoToMainPage implements Command {
         HttpSession session = request.getSession();
 
         if (session == null) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(GO_TO_MAIN_PAGE_COMMAND);
             return;
         }
@@ -33,7 +33,7 @@ public class GoToMainPage implements Command {
         Boolean isAuth = (Boolean) session.getAttribute(ATTRIBUTE_AUTH);
 
         if (isAuth == null || !isAuth) {
-            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR,MESSAGE_ERROR);
+            request.setAttribute(ATTRIBUTE_MESSAGE_ERROR, MESSAGE_ERROR);
             commandProvider.getCommand(GO_TO_MAIN_PAGE_COMMAND);
             return;
         }

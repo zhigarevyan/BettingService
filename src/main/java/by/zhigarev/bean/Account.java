@@ -16,7 +16,8 @@ public class Account {
         this.creation_date = creation_date;
     }
 
-    public Account(){}
+    public Account() {
+    }
 
     public int getId() {
         return id;

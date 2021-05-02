@@ -6,6 +6,9 @@
     <title>AddResult</title>
 </head>
 <body>
+<c:if test="${not empty sessionScope.locale}">
+    <fmt:setLocale value="${sessionScope.locale}"/>
+</c:if>
 <fmt:setBundle basename="locale"/>
 
 <fmt:message key="admin.chooseWinner" var="chooseWinner"/>
@@ -42,12 +45,14 @@
         <div class="row justify-content-between">
             <div class="form-group m-2">
                 <label for="firstParticipantScoreInput">${firstParticipantScore}</label>
-                <input type="number" required pattern="${regex_requiredField}" min="1" form="addResultForm" id="firstParticipantScoreInput" name="firstParticipantScore"
+                <input type="number" required pattern="${regex_requiredField}" min="1" form="addResultForm"
+                       id="firstParticipantScoreInput" name="firstParticipantScore"
                        class="form-control">
             </div>
             <div class="form-group m-2">
                 <label for="secondParticipantScoreInput">${secondParticipantScore}</label>
-                <input type="number" required pattern="${regex_requiredField}" min="1" form="addResultForm" id="secondParticipantScoreInput" name="secondParticipantScore"
+                <input type="number" required pattern="${regex_requiredField}" min="1" form="addResultForm"
+                       id="secondParticipantScoreInput" name="secondParticipantScore"
                        class="form-control">
             </div>
         </div>

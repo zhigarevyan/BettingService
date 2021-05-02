@@ -1,33 +1,33 @@
 package by.zhigarev.dao.impl;
 
+import by.zhigarev.bean.User;
 import by.zhigarev.bean.info.SignInInfo;
 import by.zhigarev.bean.info.SignUpInfo;
-import by.zhigarev.bean.User;
 import by.zhigarev.dao.UserDAO;
 import by.zhigarev.dao.connection.ConnectionPool;
 import by.zhigarev.dao.connection.impl.ConnectionPoolImpl;
 import by.zhigarev.dao.exception.DAOException;
 import by.zhigarev.dao.exception.DuplicateLoginException;
-
+import by.zhigarev.dao.exception.WrongPasswordException;
 
 import java.sql.*;
 
 public class UserDAOImpl implements UserDAO {
 
     private static final String MESSAGE_SQL_EXCEPTION = "SQLException on DAO layer";
-    private static final String MESSAGE_CANT_GET_USER_EXCEPTION = "Cant get user with this id";
-    private static final String MESSAGE_CANT_CREATE_USER_EXCEPTION = "Cant create user";
+    private static final String MESSAGE_WRONG_PASSWORD_EXCEPTION = "Wrong password";
 
     private static final String SQL_SIGN_UP = "insert into Users(login,password,name,surname,email,birthday,role) values (?,?,?,?,?,?,?)";
     private static final String SQL_GET_USER_BY_LOGIN = "select * from Users where login = ?";
     private static final String SQL_CHANGE_USER = "update users set login = ?, name = ?, surname= ?, email = ?, birthday  =? where id = ?";
     private static final String SQL_CHANGE_PASSWORD = "update users set password  = ? where id = ?";
-    private static final String SQL_CHECK_LOGIN = "select * from users where login = ?";
+
 
     private static final int DUPLICATE_LOGIN_ERROR_CODE = 1062;
 
     private static final UserDAOImpl instance = new UserDAOImpl();
     private static final ConnectionPool connectionPool = ConnectionPoolImpl.getInstance();
+
 
     public static UserDAOImpl getInstance() {
         return instance;
@@ -47,11 +47,12 @@ public class UserDAOImpl implements UserDAO {
 
             ResultSet rs = ps.executeQuery();
 
+
             while (rs.next()) {
                 String password = rs.getString(UserParams.PASSWORD);
 
                 if (!signInInfo.getPassword().equals(password)) {
-                    return null;
+                    throw new WrongPasswordException(MESSAGE_WRONG_PASSWORD_EXCEPTION);
                 }
 
                 user = new User(rs.getInt(UserParams.ID),
@@ -64,18 +65,19 @@ public class UserDAOImpl implements UserDAO {
                         rs.getInt(UserParams.ROLE));
 
             }
+            return user;
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
         } finally {
             connectionPool.closeConnection(connection, ps);
         }
-        return user;
+
     }
 
     @Override
-    public User signUp(SignUpInfo signUpInfo) throws DAOException, DuplicateLoginException {
+    public User signUp(SignUpInfo signUpInfo) throws DuplicateLoginException, DAOException {
         final int DEFAULT_ROLE = 1;
-        User user = null;
+        User user;
         Connection connection = null;
         PreparedStatement ps = null;
         try {
@@ -92,9 +94,9 @@ public class UserDAOImpl implements UserDAO {
 
             user = signIn(new SignInInfo(signUpInfo.getLogin(), signUpInfo.getPassword()));
         } catch (SQLException e) {
-            if(e.getErrorCode() == DUPLICATE_LOGIN_ERROR_CODE) {
+            if (e.getErrorCode() == DUPLICATE_LOGIN_ERROR_CODE) {
                 throw new DuplicateLoginException(MESSAGE_SQL_EXCEPTION);
-            }else {
+            } else {
                 throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
             }
         } finally {
@@ -104,29 +106,29 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean changeUser(User user) throws DAOException, DuplicateLoginException {
-        int NAME_INDEX = 2;
-        int SURNAME_INDEX =3;
-        int EMAIL_INDEX =4;
-        int BIRTHDAY_INDEX =5;
-        int ID_INDEX =6;
+    public void changeUser(User user) throws DAOException, DuplicateLoginException {
+        final int NAME_INDEX = 2;
+        final int SURNAME_INDEX = 3;
+        final int EMAIL_INDEX = 4;
+        final int BIRTHDAY_INDEX = 5;
+        final int ID_INDEX = 6;
 
         Connection connection = null;
         PreparedStatement ps = null;
-        try{
+        try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_CHANGE_USER);
-            ps.setString(SignUpIndexes.LOGIN,user.getLogin());
-            ps.setString(NAME_INDEX,user.getName());
-            ps.setString(SURNAME_INDEX,user.getSurName());
-            ps.setString(EMAIL_INDEX,user.getEmail());
-            ps.setDate(BIRTHDAY_INDEX,new Date(user.getBirthdayDate().getTime()));
-            ps.setInt(ID_INDEX,user.getId());
-            return ps.execute();
-        }catch (SQLException e) {
-            if(e.getErrorCode() == DUPLICATE_LOGIN_ERROR_CODE) {
+            ps.setString(SignUpIndexes.LOGIN, user.getLogin());
+            ps.setString(NAME_INDEX, user.getName());
+            ps.setString(SURNAME_INDEX, user.getSurName());
+            ps.setString(EMAIL_INDEX, user.getEmail());
+            ps.setDate(BIRTHDAY_INDEX, new Date(user.getBirthdayDate().getTime()));
+            ps.setInt(ID_INDEX, user.getId());
+            ps.execute();
+        } catch (SQLException e) {
+            if (e.getErrorCode() == DUPLICATE_LOGIN_ERROR_CODE) {
                 throw new DuplicateLoginException(MESSAGE_SQL_EXCEPTION);
-            }else {
+            } else {
                 throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
             }
         } finally {
@@ -135,43 +137,23 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean changePasswordById(int userId, String newPassword) throws DAOException {
-        int PASSWORD_INDEX = 1;
-        int USER_ID_INDEX = 2;
+    public void changePasswordById(int userId, String newPassword) throws DAOException {
+        final int PASSWORD_INDEX = 1;
+        final int USER_ID_INDEX = 2;
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = connectionPool.getConnection();
             ps = connection.prepareStatement(SQL_CHANGE_PASSWORD);
-            ps.setString(PASSWORD_INDEX,newPassword);
-            ps.setInt(USER_ID_INDEX,userId);
-            return  ps.execute();
-        }catch (SQLException e) {
-            throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
-        } finally {
-            connectionPool.closeConnection(connection, ps);
-        }
-    }
-
-    @Override
-    public boolean checkLogin(String login) throws DAOException {
-        Connection connection = null;
-        PreparedStatement ps = null;
-
-        try {
-            connection = connectionPool.getConnection();
-            ps = connection.prepareStatement(SQL_CHECK_LOGIN);
-            ps.setString(SignUpIndexes.LOGIN,login);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-
+            ps.setString(PASSWORD_INDEX, newPassword);
+            ps.setInt(USER_ID_INDEX, userId);
+            ps.execute();
         } catch (SQLException e) {
             throw new DAOException(MESSAGE_SQL_EXCEPTION, e);
         } finally {
             connectionPool.closeConnection(connection, ps);
         }
     }
-
 
     private static class SignUpIndexes {
         private static final int LOGIN = 1;
